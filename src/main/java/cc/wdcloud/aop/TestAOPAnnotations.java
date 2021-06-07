@@ -3,23 +3,18 @@ package cc.wdcloud.aop;
 import cc.wdcloud.annotation.LogAnnotation;
 import cc.wdcloud.base.Resp;
 import cc.wdcloud.common.CommonInfoHolder;
-import cc.wdcloud.common.log.ULogger;
 import cc.wdcloud.feignClient.CommonOprationLog;
 import cc.wdcloud.feignClient.UserLogAgent;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -92,6 +87,13 @@ public class TestAOPAnnotations {
         String resultString = JSONObject.toJSONString(result);
         String paramJSON = processingParameters(demoAnnotation, joinPoint);
         CommonOprationLog commonOprationLog = processReturnValue(demoAnnotation, resultString, paramJSON);
+        userLogAgent.save(commonOprationLog);
+    }
+
+    @AfterThrowing(pointcut = "test() && @annotation(demoAnnotation)", throwing = "ex")
+    public void doAfterThrowing(JoinPoint joinPoint, LogAnnotation demoAnnotation, Throwable ex) {
+        String paramJSON = processingParameters(demoAnnotation, joinPoint);
+        CommonOprationLog commonOprationLog = processReturnValue(demoAnnotation, "错误信息：" + ex, paramJSON);
         userLogAgent.save(commonOprationLog);
     }
 
@@ -182,14 +184,19 @@ public class TestAOPAnnotations {
      * @date 2021/5/13 18:11
      */
     private CommonOprationLog processReturnValue(LogAnnotation demoAnnotation, String result, String paramJSON) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        // IP地址
-        String ipAddr = getRemoteHost(request);
-        // 请求地址
-        String url = request.getRequestURL().toString();
-//        ULogger.info("请求源IP:【{}】,请求URL:【{}】",ipAddr,url);
         CommonOprationLog commonOprationLog = new CommonOprationLog();
-        commonOprationLog.setUrl(url);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (requestAttributes == null) {
+            commonOprationLog.setUrl(null);
+        } else {
+            HttpServletRequest request = requestAttributes.getRequest();
+            // IP地址
+            String ipAddr = getRemoteHost(request);
+            // 请求地址
+            String url = request.getRequestURL().toString();
+//            ULogger.info("请求源IP:【{}】,请求URL:【{}】",ipAddr,url);
+            commonOprationLog.setUrl(url);
+        }
         commonOprationLog.setName(demoAnnotation.value());
         commonOprationLog.setSaasId(CommonInfoHolder.getSaasId());
         commonOprationLog.setBranchId(CommonInfoHolder.getBranchId());
