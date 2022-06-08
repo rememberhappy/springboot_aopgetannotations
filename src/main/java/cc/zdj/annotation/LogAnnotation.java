@@ -1,4 +1,4 @@
-package cc.wdcloud.annotation;
+package cc.zdj.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

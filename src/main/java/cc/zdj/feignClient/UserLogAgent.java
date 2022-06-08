@@ -1,4 +1,4 @@
-package cc.wdcloud.feignClient;
+package cc.zdj.feignClient;
 
 import cc.wdcloud.base.Resp;
 import org.springframework.cloud.openfeign.FeignClient;

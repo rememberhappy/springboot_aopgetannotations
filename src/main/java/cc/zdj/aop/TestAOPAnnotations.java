@@ -1,10 +1,10 @@
-package cc.wdcloud.aop;
+package cc.zdj.aop;
 
-import cc.wdcloud.annotation.LogAnnotation;
+import cc.zdj.annotation.LogAnnotation;
 import cc.wdcloud.base.Resp;
 import cc.wdcloud.common.CommonInfoHolder;
-import cc.wdcloud.feignClient.CommonOprationLog;
-import cc.wdcloud.feignClient.UserLogAgent;
+import cc.zdj.feignClient.CommonOprationLog;
+import cc.zdj.feignClient.UserLogAgent;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -42,7 +42,7 @@ public class TestAOPAnnotations {
      * @Author zhangdj
      * @date 2021/5/13 18:03
      */
-    @Pointcut("@annotation(cc.wdcloud.annotation.LogAnnotation)")
+    @Pointcut("@annotation(cc.zdj.annotation.LogAnnotation)")
     public void test() {
     }
 

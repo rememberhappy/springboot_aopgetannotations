@@ -1,4 +1,4 @@
-package cc.wdcloud.feignClient;
+package cc.zdj.feignClient;
 
 import lombok.Data;
 import lombok.ToString;
